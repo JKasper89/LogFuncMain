@@ -169,17 +169,19 @@ class HALFADDERGate(LogFunc):  # Definition des Halfadder
         """
         set 2 inputs and 2 outputs
         """
+        self.__myxor = XORGate(2)
+        self.__myand = ANDGate(2)
         super().__init__(2, 2)
 
     def execute(self):  # Berechnung des Halfadders
-        """First Output is Carry Bit, Second Output is Sum Bit"""
-        myxor = XORGate(2)
-        myand = ANDGate(2)
-        myxor.Inputs = self.Inputs
-        myand.Inputs = self.Inputs
-        myxor.execute()
-        myand.execute()
-        self._setoutputs([myand.Outputs, myxor.Outputs])
+        """
+        First Output is Carry Bit, Second Output is Sum
+        """
+        self.__myxor.Inputs = self.Inputs
+        self.__myand.Inputs = self.Inputs
+        self.__myxor.execute()
+        self.__myand.execute()
+        self._setoutputs([self.__myand.Outputs, self.__myxor.Outputs])
 
 
 class FULLADDERGate(LogFunc):  # Definition des Fulladder
@@ -187,17 +189,17 @@ class FULLADDERGate(LogFunc):  # Definition des Fulladder
         """
         set 3 inputs and 2 outputs
         """
+        self.__myhadder1 = HALFADDERGate()
+        self.__myhadder2 = HALFADDERGate()
+        self.__myor = ORGate()
         super().__init__(3, 2)
 
     def execute(self):  # Berechnung des Fulladder
         """First Output is Carry Bit, second is Sum Bit"""
-        myhadder1 = HALFADDERGate()
-        myhadder2 = HALFADDERGate()
-        myor = ORGate()
-        myhadder1.Inputs = [self.Inputs[0], self.Inputs[1]]
-        myhadder1.execute()
-        myhadder2.Inputs = [myhadder1.Outputs[1], self.Inputs[2]]
-        myhadder2.execute()
-        myor.Inputs = [myhadder1.Outputs[0], myhadder2.Outputs[0]]
-        myor.execute()
-        self._setoutputs([myor.Outputs, myhadder2.Outputs[1]])
+        self.__myhadder1.Inputs = [self.Inputs[0], self.Inputs[1]]
+        self.__myhadder1.execute()
+        self.__myhadder2.Inputs = [self.__myhadder1.Outputs[1], self.Inputs[2]]
+        self.__myhadder2.execute()
+        self.__myor.Inputs = [self.__myhadder1.Outputs[0], self.__myhadder2.Outputs[0]]
+        self.__myor.execute()
+        self._setoutputs([self.__myor.Outputs, self.__myhadder2.Outputs[1]])
