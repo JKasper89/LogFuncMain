@@ -292,7 +292,7 @@ __Carry
       <w>310</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>FullAdder
+    <panel_attributes>EightBitAdder
 --
 + __init__()
 + execute() :</panel_attributes>
