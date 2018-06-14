@@ -169,17 +169,20 @@ class HALFADDERGate(LogFunc):  # Definition des Halfadder
         """
         set 2 inputs and 2 outputs
         """
+        self.__Sum = XORGate(2)
+        self.__Sum.Name = "Sum"
+        self.__Carry = ANDGate(2)
+        self.__Carry.Name = "Carry"
         super().__init__(2, 2)
+        self.Name = "YaHalfAdder"
 
     def execute(self):  # Berechnung des Halfadders
         """First Output is Carry Bit, Second Output is Sum Bit"""
-        myxor = XORGate(2)
-        myand = ANDGate(2)
-        myxor.Inputs = self.Inputs
-        myand.Inputs = self.Inputs
-        myxor.execute()
-        myand.execute()
-        self._setoutputs([myand.Outputs, myxor.Outputs])
+        self.__Sum.Inputs = self.Inputs
+        self.__Carry.Inputs = self.Inputs
+        self.__Sum.execute()
+        self.__Carry.execute()
+        self._setoutputs([self.__Carry.Outputs, self.__Sum.Outputs])
 
 
 class FULLADDERGate(LogFunc):  # Definition des Fulladder
@@ -187,17 +190,61 @@ class FULLADDERGate(LogFunc):  # Definition des Fulladder
         """
         set 3 inputs and 2 outputs
         """
+        self.__Sum = [HALFADDERGate(),HALFADDERGate()]
+        self.__Carry = ORGate(2)
         super().__init__(3, 2)
-
+        self.Name= "YaFullAdder"
     def execute(self):  # Berechnung des Fulladder
-        """First Output is Carry Bit, second is Sum Bit"""
-        myhadder1 = HALFADDERGate()
-        myhadder2 = HALFADDERGate()
-        myor = ORGate()
-        myhadder1.Inputs = [self.Inputs[0], self.Inputs[1]]
-        myhadder1.execute()
-        myhadder2.Inputs = [myhadder1.Outputs[1], self.Inputs[2]]
-        myhadder2.execute()
-        myor.Inputs = [myhadder1.Outputs[0], myhadder2.Outputs[0]]
-        myor.execute()
-        self._setoutputs([myor.Outputs, myhadder2.Outputs[1]])
+        """
+        First Output is Carry Bit, second is Sum Bit
+        """
+        self.__Sum[0].Inputs = [self.Inputs[0],self.Inputs[1]]
+        self.__Sum[0].execute()
+
+        self.__Sum[1].Inputs = [self.__Sum[0].Outputs[1], self.Inputs[2]]
+        self.__Sum[1].execute()
+
+        self.__Carry.Inputs = [self.__Sum[0].Outputs[0], self.__Sum[1].Outputs[0]]
+        self.__Carry.execute()
+
+        self._setoutputs([self.__Carry.Outputs, self.__Sum[1].Outputs[1]])
+
+class EightBitAdderGate(LogFunc): #Definition des 8 Bit Addierer
+    def __init__(self):
+        """
+
+        """
+        self.__Adder = [FULLADDERGate(), FULLADDERGate(), FULLADDERGate(), FULLADDERGate(), FULLADDERGate(), FULLADDERGate(), FULLADDERGate(), FULLADDERGate(),]
+        super().__init__(16, 9)
+        self.Name = "YaAdder"
+    def execute(self): # Berechnung der 8 Bit Addition
+        """
+
+        :return:
+        """
+        self.__Adder[7].Inputs = [self.Inputs[7], self.Inputs[15], False]
+        self.__Adder[7].execute()
+
+        self.__Adder[6].Inputs = [self.Inputs[6], self.Inputs[14], self.__Adder[7].Outputs[0]]
+        self.__Adder[6].execute()
+
+        self.__Adder[5].Inputs = [self.Inputs[5], self.Inputs[13], self.__Adder[6].Outputs[0]]
+        self.__Adder[5].execute()
+
+        self.__Adder[4].Inputs = [self.Inputs[4], self.Inputs[12], self.__Adder[5].Outputs[0]]
+        self.__Adder[4].execute()
+
+        self.__Adder[3].Inputs = [self.Inputs[3], self.Inputs[11], self.__Adder[4].Outputs[0]]
+        self.__Adder[3].execute()
+
+        self.__Adder[2].Inputs = [self.Inputs[2], self.Inputs[10], self.__Adder[3].Outputs[0]]
+        self.__Adder[2].execute()
+
+        self.__Adder[1].Inputs = [self.Inputs[1], self.Inputs[9], self.__Adder[2].Outputs[0]]
+        self.__Adder[1].execute()
+
+        self.__Adder[0].Inputs = [self.Inputs[0], self.Inputs[8], self.__Adder[1].Outputs[0]]
+        self.__Adder[0].execute()
+
+        self._setoutputs([self.__Adder[0].Outputs[0], self.__Adder[0].Outputs[1], self.__Adder[1].Outputs[1], self.__Adder[2].Outputs[1], self.__Adder[3].Outputs[1], self.__Adder[4].Outputs[1], self.__Adder[5].Outputs[1], self.__Adder[6].Outputs[1], self.__Adder[7].Outputs[1]])
+
