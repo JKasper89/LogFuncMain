@@ -3,6 +3,7 @@ __version__ = '2.1'  # Versionsinformationen
 __author__ = 'Jan Kasper(jan.kasper@students.tbs1.de)'
 
 from abc import ABC, abstractmethod
+from LogFuncInterface import *
 
 
 class LogFunc(ABC):  # Beginn der Klassendefinition
@@ -10,7 +11,7 @@ class LogFunc(ABC):  # Beginn der Klassendefinition
     This is the parent class for logic gate classes.
     """
 
-    def __init__(self, numberofinputs, numberofoutputs):  # Definition der Attribute
+    def __init__(self, numberofinputs, numberofoutputs, showverhalten):  # Definition der Attribute
         """
         Create a logic Gate with given numberofinputs and numberofoutputs.
         Inputs and Outputs get the boolean value False.
@@ -20,6 +21,7 @@ class LogFunc(ABC):  # Beginn der Klassendefinition
         self.__Inputs = [False] * numberofinputs
         self.__Outputs = [False] * numberofoutputs
         self.__Name = type(self).__name__
+        self.__ShowVerhalten = showverhalten
         self.execute()
 
     # Definition der Getter und Setter
@@ -41,10 +43,17 @@ class LogFunc(ABC):  # Beginn der Klassendefinition
     def __setname(self, value):
         self.__Name = value
 
+    def __getshowverhalten(self):
+        return self.__ShowVerhalten
+
+    def __setshowverhalten(self, value):
+        self.__ShowVerhalten = value
+
     # Definition der Properties
     Inputs = property(__getinputs, __setinputs)
     Outputs = property(__getoutputs, None)
     Name = property(__getname, __setname)
+    ShowVerhalten = property(__getshowverhalten(), __setshowverhalten())
 
     @abstractmethod
     def execute(self):  # Berechnung der logischen Verknüpfung
@@ -71,7 +80,7 @@ class LogFunc(ABC):  # Beginn der Klassendefinition
         Shows the value of each property of the class and the class name
         :return: None
         """
-        print(self.__str__())
+        self.__ShowVerhalten.show()
 
 
 class ANDGate(LogFunc):  # Definition des AND Gates
@@ -247,4 +256,5 @@ class EightBitAdderGate(LogFunc): #Definition des 8 Bit Addierer
         self.__Adder[0].execute()
 
         self._setoutputs([self.__Adder[0].Outputs[0], self.__Adder[0].Outputs[1], self.__Adder[1].Outputs[1], self.__Adder[2].Outputs[1], self.__Adder[3].Outputs[1], self.__Adder[4].Outputs[1], self.__Adder[5].Outputs[1], self.__Adder[6].Outputs[1], self.__Adder[7].Outputs[1]])
+
 
